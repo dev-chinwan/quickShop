@@ -2,15 +2,15 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const ThemeContext = createContext({ theme: 'light', toggleTheme: () => {} });
+const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} });
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem('quickshop-theme') || 'light';
+    const saved = localStorage.getItem('quickshop-theme') || 'dark';
     setTheme(saved);
     document.documentElement.classList.toggle('dark', saved === 'dark');
   }, []);

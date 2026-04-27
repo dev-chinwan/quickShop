@@ -17,7 +17,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-gray-500 leading-relaxed mb-6">
-              Fresh groceries delivered to your door in 10 minutes. Quality produce, everyday essentials.
+              Fresh groceries delivered to your door. Quality produce, everyday essentials.
             </p>
             <div className="flex gap-3">
               {[Twitter, Instagram, Facebook, Youtube].map((Icon, i) => (
@@ -35,15 +35,15 @@ export default function Footer() {
           {[
             {
               title: 'Categories',
-              links: ['Vegetables', 'Fruits', 'Dairy', 'Snacks', 'Beverages', 'Bakery'],
+              links: ['Grocery', 'Snacks', 'Beverages', 'Bakery'],
             },
             {
               title: 'Company',
-              links: ['About Us', 'Careers', 'Blog', 'Press', 'Partners'],
+              links: ['About Us', 'Careers', 'Blog', 'Partners'],
             },
             {
               title: 'Support',
-              links: ['Help Center', 'Track Order', 'Return Policy', 'Contact Us', 'Privacy Policy'],
+              links: ['Help Center', 'Return Policy', 'Contact Us', 'Privacy Policy'],
             },
           ].map((col) => (
             <div key={col.title}>
@@ -52,7 +52,7 @@ export default function Footer() {
                 {col.links.map((link) => (
                   <li key={link}>
                     <Link
-                      href={`/category?category=${link.toLowerCase()}`}
+                      href={`/${link.toLowerCase().replace(/\s+/g, '-')}`}
                       className="text-sm hover:text-green-400 transition-colors"
                     >
                       {link}
@@ -68,7 +68,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-600">© 2025 QuickShop Inc. All rights reserved.</p>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-600 bg-gray-800 px-3 py-1.5 rounded-full">🚀 10-min delivery</span>
+            <span className="text-xs text-gray-600 bg-gray-800 px-3 py-1.5 rounded-full">🚀 Fast Delivery</span>
             <span className="text-xs text-gray-600 bg-gray-800 px-3 py-1.5 rounded-full">🌱 100% Fresh</span>
             <span className="text-xs text-gray-600 bg-gray-800 px-3 py-1.5 rounded-full">💚 Eco-friendly</span>
           </div>

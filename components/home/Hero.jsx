@@ -2,11 +2,20 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Zap, Shield, Leaf } from 'lucide-react';
+import { Search, Shield, Leaf, Clock3 } from 'lucide-react';
+import homeContent from '@/data/home-content.json';
 
 export default function Hero() {
   const [query, setQuery] = useState('');
   const router = useRouter();
+
+  const { hero } = homeContent;
+  const selectedHeadline = hero.headlineOptions[hero.activeHeadlineIndex] ?? hero.headlineOptions[0];
+  const iconMap = {
+    Clock3,
+    Leaf,
+    Shield,
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -14,8 +23,6 @@ export default function Hero() {
       router.push(`/category?search=${encodeURIComponent(query)}`);
     }
   };
-
-  const suggestions = ['🍚 Rice', '🌾 Atta', '🫘 Dal', '🫒 Oil', '🧼 Daily Use'];
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
@@ -29,19 +36,17 @@ export default function Hero() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 text-center">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-full px-4 py-1.5 text-sm font-medium text-green-700 dark:text-green-400 mb-6 shadow-sm">
-          <Zap className="w-3.5 h-3.5 fill-current" />
-          Delivery in 10 minutes
+          <Shield className="w-3.5 h-3.5" />
+          {hero.badgeText}
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display text-gray-900 dark:text-white mb-5 leading-tight">
-          Daily essentials,
-          <br />
-          <span className="gradient-text">delivered fast.</span>
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display text-gray-900 dark:text-white mb-5 leading-tight">Daily essentials, <br />
+          <span className="gradient-text">{selectedHeadline}</span>
         </h1>
 
         <p className="text-lg text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
-          Start with rice, atta, dal, oil, and day-to-day home needs. Simple catalog, quick delivery, easy checkout.
+          {hero.description}
         </p>
 
         {/* Search */}
@@ -55,38 +60,37 @@ export default function Hero() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search rice, atta, dal, oil, daily use..."
+              placeholder={hero.searchPlaceholder}
               className="flex-1 px-3 py-2 text-gray-900 dark:text-white bg-transparent outline-none placeholder-gray-400 text-base"
             />
             <button
               type="submit"
               className="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-all active:scale-95 shrink-0"
             >
-              Search
+              {hero.searchButtonLabel}
             </button>
           </div>
         </form>
 
         {/* Quick suggestions */}
         <div className="flex flex-wrap justify-center gap-2 mb-14">
-          {suggestions.map((s) => (
+          {hero.suggestions.map((suggestion) => (
             <button
-              key={s}
-              onClick={() => router.push(`/category?search=${encodeURIComponent(s.split(' ')[1])}`)}
+              key={suggestion.label}
+              onClick={() => router.push(`/category?search=${encodeURIComponent(suggestion.query)}`)}
               className="text-sm bg-white/80 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-3.5 py-1.5 rounded-full hover:border-green-400 hover:text-green-600 dark:hover:text-green-400 transition-all"
             >
-              {s}
+              {suggestion.label}
             </button>
           ))}
         </div>
 
         {/* Stats */}
         <div className="flex flex-wrap justify-center gap-8 text-center">
-          {[
-            { icon: Zap, label: '10-min Delivery', value: 'Guaranteed' },
-            { icon: Leaf, label: 'Daily Essentials', value: '500+' },
-            { icon: Shield, label: 'Happy Customers', value: '500K+' },
-          ].map(({ icon: Icon, label, value }) => (
+          {hero.stats.map(({ icon, label, value }) => {
+            const Icon = iconMap[icon] ?? Shield;
+
+            return (
             <div key={label} className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
                 <Icon className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -96,7 +100,8 @@ export default function Hero() {
                 <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
       </div>
     </section>

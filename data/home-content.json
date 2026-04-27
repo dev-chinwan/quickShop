@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "headlineOptions": [
+      "Fast, Reliable Delivery from Your Nearby Stores",
+      "delivered fast from your local stores",  
+      "Your Neighborhood Stores, Now at Your Doorstep",
+      "On-Time Local Delivery You Can Count On"
+    ],
+    "activeHeadlineIndex": 1,
+    "badgeText": "Trusted local stores, reliable delivery",
+    "description": "Start with rice, atta, dal, oil, and day-to-day home needs. Verified neighborhood shops and responsive support.",
+    "searchPlaceholder": "Search rice, atta, dal, oil, daily use...",
+    "searchButtonLabel": "Search",
+    "suggestions": [
+      {
+        "label": "🍚 Rice",
+        "query": "Rice"
+      },
+      {
+        "label": "🌾 Atta",
+        "query": "Atta"
+      },
+      {
+        "label": "🫘 Dal",
+        "query": "Dal"
+      },
+      {
+        "label": "🫒 Oil",
+        "query": "Oil"
+      },
+      {
+        "label": "🧼 Daily Use",
+        "query": "Daily Use"
+      }
+    ],
+    "stats": [
+      {
+        "icon": "Clock3",
+        "label": "On-Time Delivery",
+        "value": "Same Hour"
+      },
+      {
+        "icon": "Leaf",
+        "label": "Daily Essentials",
+        "value": "500+"
+      },
+      {
+        "icon": "Shield",
+        "label": "Verified Local Shops",
+        "value": "Trusted"
+      }
+    ]
+  }
+}
