@@ -88,32 +88,76 @@ Open [http://localhost:3000](http://localhost:3000)
 Recommended environment variables:
 
 ```bash
-NEXT_PUBLIC_API_MODE=mock
-NEXT_PUBLIC_API_BASE_URL=
+NEXT_PUBLIC_API_MODE=backend
+NEXT_PUBLIC_API_BASE_URL=/api
+DATA_PROVIDER=json
 ```
 
-When your backend is ready:
+When moving to MongoDB Atlas (recommended for Vercel):
 
 ```bash
 NEXT_PUBLIC_API_MODE=backend
-NEXT_PUBLIC_API_BASE_URL=https://your-api-domain.com
+NEXT_PUBLIC_API_BASE_URL=/api
+DATA_PROVIDER=mongodb
+MONGODB_URI=your-atlas-connection-string
+MONGODB_DB=quickshop
 ```
 
 ## Backend Integration
 
 The frontend is already prepared to swap from mock data to a real API through lib/api.js.
 
+This repository now includes a built-in serverless backend using Next.js route handlers under `app/api`.
+
+### Data Strategy (Phase 1 -> Phase 2)
+
+Phase 1 (current):
+
+- Source data from `data/seed.json`.
+- Use `DATA_PROVIDER=json` for no-setup local testing.
+- Reads are stable, writes are in-memory for the running process (good for development/demo).
+
+Phase 2 (production):
+
+- Switch to MongoDB Atlas with `DATA_PROVIDER=mongodb`.
+- Works well with Vercel serverless functions and needs no SQL migrations at start.
+
+Why MongoDB over Neon for this project:
+
+- Your current app already uses nested product/order JSON shapes.
+- MongoDB integration is simpler and faster for Vercel in early releases.
+- Neon is excellent too, but requires more schema/migration work up front.
+
+Mongo schema + index reference:
+
+- `docs/mongodb-schema.md`
+
+Validation schemas used by APIs:
+
+- `lib/server/validators.js`
+
+Environment template:
+
+- `env.backend.example`
+
 Expected backend endpoints:
 
 ```text
-GET    /products
-GET    /products/featured
-GET    /products/:id
-GET    /products/:id/related
-GET    /products/search?q=term
-GET    /catalog/categories
-GET    /catalog/banners
-POST   /orders
+GET    /api/products
+POST   /api/products
+PATCH  /api/products/:id
+DELETE /api/products/:id
+GET    /api/products/featured
+GET    /api/products/:id
+GET    /api/products/:id/related
+GET    /api/products/search?q=term
+GET    /api/catalog/categories
+POST   /api/catalog/categories
+GET    /api/catalog/banners
+POST   /api/catalog/banners
+GET    /api/orders
+POST   /api/orders
+GET    /api/orders/:id
 ```
 
 Suggested response shape:
@@ -149,10 +193,27 @@ The service layer already supports real API calls. You only need to point it to 
 
 ```js
 export async function fetchProducts(filters) {
-  const res = await fetch(`/products?${new URLSearchParams(filters)}`);
+  const res = await fetch(`/api/products?${new URLSearchParams(filters)}`);
   return res.json();
 }
 ```
+
+## Postman Testing (Local)
+
+Import this collection in Postman:
+
+- `postman/quickshop-local.postman_collection.json`
+
+Collection variable:
+
+- `baseUrl = http://localhost:3000/api`
+
+Quick test flow:
+
+1. Start app: `npm run dev`
+2. Run `Products -> List Products`
+3. Run `Orders -> Create Order`
+4. Copy returned `orderId` and run `Orders -> Get Order By ID`
 
 ## Build Roadmap
 
