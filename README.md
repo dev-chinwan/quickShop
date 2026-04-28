@@ -215,6 +215,181 @@ Quick test flow:
 3. Run `Orders -> Create Order`
 4. Copy returned `orderId` and run `Orders -> Get Order By ID`
 
+## Admin Dashboard (Implementation Plan)
+
+This is the first implementation target for admin features: manage all products with complete field mapping in frontend, validate UI locally, then move from mock storage to DB.
+
+### Goal
+
+Build an admin dashboard where an admin can:
+
+- View all products with search/filter/sort.
+- Create a product with all required fields.
+- Edit existing products.
+- Delete products.
+- Toggle featured status and stock availability quickly.
+
+### Frontend Scope (Admin)
+
+Create these routes and components:
+
+- `app/admin/page.jsx` - Dashboard overview cards (total products, low stock, featured count).
+- `app/admin/products/page.jsx` - Product table/list with filters and actions.
+- `app/admin/products/new/page.jsx` - Create product form.
+- `app/admin/products/[id]/page.jsx` - Edit product form.
+- `components/admin/ProductForm.jsx` - Shared create/edit form.
+- `components/admin/ProductsTable.jsx` - Table/list view with pagination and row actions.
+- `components/admin/ProductDeleteModal.jsx` - Confirm before delete.
+
+Use the same service boundary in `lib/api.js` and keep UI components independent from data provider details.
+
+### Required Product Field Mapping (Frontend -> API)
+
+Use this mapping for form payloads and API responses:
+
+| UI Field | Type | Required | API Field | Notes |
+|------|------|------|------|------|
+| Product Name | string | yes | `name` | 3-120 chars |
+| Slug | string | yes | `slug` | unique, lowercase, hyphenated |
+| Description | string | yes | `description` | 10+ chars |
+| Brand | string | no | `brand` | optional |
+| Category ID | string | yes | `categoryId` | must exist in categories |
+| Category Name | string | no | `categoryName` | denormalized display field |
+| Price | number | yes | `price` | decimal >= 0 |
+| Compare At Price | number | no | `compareAtPrice` | decimal >= price |
+| Currency | string | yes | `currency` | default `INR` |
+| SKU | string | yes | `sku` | unique inventory key |
+| Stock Quantity | number | yes | `stock` | integer >= 0 |
+| In Stock | boolean | yes | `inStock` | derived from stock or manual toggle |
+| Unit Label | string | no | `unitLabel` | ex: `500g`, `1L` |
+| Image URL | string | yes | `image` | primary image |
+| Gallery Images | string[] | no | `images` | optional list |
+| Featured | boolean | no | `featured` | for home featured section |
+| Tags | string[] | no | `tags` | searchable keywords |
+| Rating | number | no | `rating` | read-only in admin unless needed |
+| Review Count | number | no | `reviewCount` | read-only in admin unless needed |
+| Status | string | yes | `status` | `draft` or `active` |
+| Meta Title | string | no | `seo.title` | SEO |
+| Meta Description | string | no | `seo.description` | SEO |
+
+Suggested create/update payload:
+
+```json
+{
+  "name": "Fresh Apples",
+  "slug": "fresh-apples",
+  "description": "Crisp and sweet farm-fresh apples.",
+  "brand": "QuickFarm",
+  "categoryId": "cat-fruits",
+  "categoryName": "Fruits",
+  "price": 120,
+  "compareAtPrice": 140,
+  "currency": "INR",
+  "sku": "FRU-APL-500",
+  "stock": 45,
+  "inStock": true,
+  "unitLabel": "500g",
+  "image": "https://example.com/apple-main.jpg",
+  "images": ["https://example.com/apple-main.jpg"],
+  "featured": true,
+  "tags": ["fruit", "fresh", "apple"],
+  "status": "active",
+  "seo": {
+    "title": "Fresh Apples Online",
+    "description": "Order fresh apples with fast delivery."
+  }
+}
+```
+
+### Admin API Contract (Mock First)
+
+Start with route handlers and JSON provider (`DATA_PROVIDER=json`):
+
+```text
+GET    /api/admin/products?search=&categoryId=&status=&featured=&page=&limit=&sort=
+POST   /api/admin/products
+GET    /api/admin/products/:id
+PATCH  /api/admin/products/:id
+DELETE /api/admin/products/:id
+PATCH  /api/admin/products/:id/stock
+PATCH  /api/admin/products/:id/featured
+```
+
+Response contract:
+
+- List:
+
+```json
+{
+  "data": [],
+  "total": 0,
+  "page": 1,
+  "limit": 10
+}
+```
+
+- Create/Read/Update:
+
+```json
+{
+  "data": {}
+}
+```
+
+- Delete:
+
+```json
+{
+  "success": true
+}
+```
+
+### Local UI Testing (Required Before DB)
+
+Use this test flow before DB integration:
+
+1. Set environment for local mock backend:
+
+```bash
+NEXT_PUBLIC_API_MODE=backend
+NEXT_PUBLIC_API_BASE_URL=/api
+DATA_PROVIDER=json
+```
+
+2. Run app:
+
+```bash
+npm run dev
+```
+
+3. Test admin UI manually:
+
+- Open `/admin/products`.
+- Create a product with all required fields.
+- Validate inline form errors for missing/invalid values.
+- Edit product and verify persisted changes after refresh.
+- Delete product and verify list count changes.
+- Test filters (category/status/featured/search) and pagination.
+- Test stock and featured quick actions.
+
+4. Verify with Postman (same base URL):
+
+- Create product -> copy `id`.
+- Get product by `id`.
+- Patch price/stock/featured.
+- Delete product and re-fetch list.
+
+### Move From Mock to DB (Phase 2)
+
+After local UI and API behavior are stable in mock mode:
+
+1. Switch `DATA_PROVIDER=mongodb`.
+2. Map admin handlers to MongoDB collections.
+3. Add indexes for `slug`, `sku`, `categoryId`, `featured`, `status`, text search fields.
+4. Keep response shape unchanged so frontend needs no rewrite.
+5. Add server-side validation parity with `lib/server/validators.js`.
+6. Re-run same admin UI checklist and Postman flow.
+
 ## Build Roadmap
 
 1. Finalize the backend contract first: products, categories, search, cart, checkout, and auth.
