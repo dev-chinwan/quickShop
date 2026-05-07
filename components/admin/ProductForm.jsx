@@ -80,7 +80,11 @@ export default function ProductForm({
 
     if (!form.name.trim()) nextErrors.name = 'Name is required';
     if (!form.slug.trim()) nextErrors.slug = 'Slug is required';
-    if (!form.description.trim()) nextErrors.description = 'Description is required';
+    if (!form.description.trim()) {
+      nextErrors.description = 'Description is required';
+    } else if (form.description.trim().length < 3) {
+      nextErrors.description = 'Description must be at least 3 characters';
+    }
     if (!form.categoryId) nextErrors.categoryId = 'Category is required';
     if (!form.sku.trim()) nextErrors.sku = 'SKU is required';
     if (Number(form.price) < 0 || form.price === '') nextErrors.price = 'Valid price is required';

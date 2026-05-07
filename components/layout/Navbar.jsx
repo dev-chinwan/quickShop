@@ -146,12 +146,12 @@ export default function Navbar() {
 
             {/* Actions */}
             <div className="flex items-center gap-2 shrink-0">
-              <Link
+              {/* <Link
                 href="/admin"
                 className="hidden md:inline-flex px-3 py-2 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
                 Admin
-              </Link>
+              </Link> */}
 
               <button
                 onClick={toggleTheme}

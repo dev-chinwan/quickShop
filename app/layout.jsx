@@ -25,7 +25,7 @@ const fontUi = Space_Grotesk({
 });
 
 export const metadata = {
-  title: 'QuickShop – Groceries in 10 Minutes',
+  title: 'QuickShop – Groceries reach at home in minutes',
   description: 'Fresh groceries, fruits, vegetables, dairy and snacks delivered to your door in minutes.',
 };
 

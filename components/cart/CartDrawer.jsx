@@ -9,7 +9,7 @@ import { formatPrice } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
 export default function CartDrawer({ open, onClose }) {
-  const { items, updateQuantity, removeItem, totalPrice, savings } = useCart();
+  const { items, updateQuantity, removeItem, totalPrice, savings, totalItems } = useCart();
   const drawerRef = useRef(null);
 
   useEffect(() => {
@@ -49,9 +49,9 @@ export default function CartDrawer({ open, onClose }) {
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-green-500" />
             <h2 className="text-lg font-bold font-ui text-gray-900 dark:text-white">Your Cart</h2>
-            {items.length > 0 && (
+            {totalItems > 0 && (
               <span className="bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full">
-                {items.length} items
+                {totalItems} items
               </span>
             )}
           </div>
@@ -68,7 +68,7 @@ export default function CartDrawer({ open, onClose }) {
           <div className="mx-5 mt-4 flex items-center gap-2 bg-green-50 dark:bg-green-900/20 rounded-xl px-4 py-3">
             <Zap className="w-4 h-4 text-green-500 fill-green-500" />
             <span className="text-sm text-green-700 dark:text-green-400 font-medium">
-              Delivery in <strong>10 minutes</strong>!
+              Delivery in <strong> minutes</strong>!
             </span>
           </div>
         )}

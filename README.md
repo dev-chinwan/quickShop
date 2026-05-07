@@ -187,6 +187,60 @@ For checkout:
 }
 ```
 
+## WhatsApp Order Notifications
+
+Order placement can send WhatsApp messages to both the shop owner and customer using Meta WhatsApp Cloud API.
+
+### Enable backend mode first
+
+```bash
+NEXT_PUBLIC_API_MODE=backend
+NEXT_PUBLIC_API_BASE_URL=/api
+```
+
+### Required WhatsApp environment variables
+
+```bash
+WHATSAPP_ENABLED=true
+WHATSAPP_STRICT_MODE=true
+WHATSAPP_OWNER_PHONE=+919999999999
+WHATSAPP_META_ACCESS_TOKEN=your-meta-access-token
+WHATSAPP_META_PHONE_NUMBER_ID=your-meta-phone-number-id
+WHATSAPP_META_API_VERSION=v22.0
+WHATSAPP_TIMEOUT_MS=10000
+```
+
+### Strict mode behavior
+
+- With `WHATSAPP_STRICT_MODE=true`, checkout API responds with failure when owner or customer message fails.
+- The order may already be persisted before WhatsApp fails. In that case, API error includes `orderId` for reconciliation.
+- Frontend should display a support-friendly message containing the `orderId`.
+
+### Checkout payload requirements for customer notification
+
+`POST /api/orders` now expects `customer.name` and `customer.phone`.
+
+Example:
+
+```json
+{
+  "items": [
+    {
+      "id": "101",
+      "name": "Fresh Apples",
+      "price": 120,
+      "quantity": 2
+    }
+  ],
+  "subtotal": 240,
+  "total": 240,
+  "customer": {
+    "name": "Aarav",
+    "phone": "+919999999999"
+  }
+}
+```
+
 ## API Integration Example
 
 The service layer already supports real API calls. You only need to point it to your backend and keep the same response contract.

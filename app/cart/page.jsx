@@ -15,6 +15,8 @@ export default function CartPage() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
 
   const deliveryFee = 0;
   const discount = couponApplied ? totalPrice * 0.1 : 0;
@@ -35,6 +37,11 @@ export default function CartPage() {
   };
 
   const handleCheckout = async () => {
+    if (!customerName.trim() || !customerPhone.trim()) {
+      toast.error('Please add your name and WhatsApp number');
+      return;
+    }
+
     setCheckoutLoading(true);
 
     try {
@@ -43,12 +50,20 @@ export default function CartPage() {
         subtotal: totalPrice,
         total: finalTotal,
         couponCode: couponApplied ? 'FRESH10' : null,
+        customer: {
+          name: customerName.trim(),
+          phone: customerPhone.trim(),
+        },
       });
 
       setOrderDetails(order);
       clearCart();
     } catch (error) {
-      toast.error(error.message || 'Unable to place the order right now');
+      if (error.code === 'WHATSAPP_DELIVERY_FAILED' && error.orderId) {
+        toast.error(`Order ${error.orderId} saved, but WhatsApp delivery failed. Please contact support.`);
+      } else {
+        toast.error(error.message || 'Unable to place the order right now');
+      }
     } finally {
       setCheckoutLoading(false);
     }
@@ -214,6 +229,22 @@ export default function CartPage() {
           {/* Summary */}
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 font-ui">Order Summary</h3>
+            <div className="space-y-3 mb-4">
+              <input
+                type="text"
+                value={customerName}
+                onChange={(event) => setCustomerName(event.target.value)}
+                placeholder="Your full name"
+                className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500/30"
+              />
+              <input
+                type="tel"
+                value={customerPhone}
+                onChange={(event) => setCustomerPhone(event.target.value)}
+                placeholder="WhatsApp number (e.g. +919999999999)"
+                className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500/30"
+              />
+            </div>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between text-gray-500 dark:text-gray-400">
                 <span>Subtotal ({totalItems} items)</span>
